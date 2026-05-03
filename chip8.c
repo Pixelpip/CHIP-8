@@ -21,3 +21,30 @@ static const uint8_t font[FONT_SIZE]={
     0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
+
+void init_chip8(Chip8 *chip8){
+    memset(chip8,0,sizeof(chip8)); //set the whole ram to 0 
+    chip8->PC=PGM_START; //PC set to the address 0x200 where programs start
+    memcpy(&chip8->ram[FONT_ADDR],font,FONT_SIZE); //fonts loaded into the ram 
+}
+
+void load_rom(Chip8 *chip8, const char *filename){
+    FILE *fp=fopen(filename,"rb");
+    if(!fp){
+        fprintf(stderr,"error:could not open file:%s\n",filename);
+        return;
+    }
+    size_t bytes_read=fread(&chip8->ram[PGM_START],1,MEM_SIZE-PGM_START,fp);
+
+    if(bytes_read==0){
+        fprintf(stderr,"error: ROM %s is empty or DNE",filename);
+    }
+    else{
+        fprintf(stderr,"Read sucess on ROM %s with size %zu in bytes",filename,bytes_read);
+    }
+
+}
+void emulate_cycle(Chip8 *c){
+    
+}
+
