@@ -38,4 +38,3 @@ void load_rom(Chip8 *c,const char *filename);  //loading the rom
 
 void emulate_cycle(Chip8 *c); //cpu cycle emulation
 
-void execute_opcode(Chip8 *c);  //opcode execution
