@@ -113,16 +113,27 @@ void emulate_cycle(Chip8 *chip8){
                     chip8->V[X]=(sum&0xFF);
                     break;
                 case 0x5:
-                    uint8_t flag=(chip8->V[X] >= chip8->V[Y]) ? 1 : 0;
+                    uint8_t f1=(chip8->V[X] >= chip8->V[Y]) ? 1 : 0;
                     chip8->V[X]=chip8->V[X] - chip8->V[Y];
-                    chip8->V[0xF]=flag;
+                    chip8->V[0xF]=f1;
                     break;
+                        
                 case 0x6:
                     chip8->V[0xF]=(chip8->V[X])&0x1;
                     chip8->V[X]>>=1; //right shifting by one place means dividing by 2
                     break;
-
+                case 0x7:
+                    uint8_t f2=(chip8->V[Y] >= chip8->V[X]) ? 1 : 0;
+                    chip8->V[X]=chip8->V[Y] - chip8->V[X];
+                    chip8->V[0xF]=f2;
+                    break;
+                case 0xE:
+                    chip8->V[0xF]=(chip8->V[X]&0x80)>>7; //check if MSB is 1 and take the MSB bit from 8th place to 0th place 
+                    chip8->V[X]<<=2;
+                    break;
+                
             }
+            break;
 
     }
 
