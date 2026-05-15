@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
     SetTargetFPS(60); 
 
     while (!WindowShouldClose()) {
-        //Mapp key from raylib def  to CHIP-8 Keypad
+        //mapp key from raylib def  to CHIP-8 Keypad
         c.keypad[0x1] = IsKeyDown(KEY_ONE);
         c.keypad[0x2] = IsKeyDown(KEY_TWO);
         c.keypad[0x3] = IsKeyDown(KEY_THREE);
