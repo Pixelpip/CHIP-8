@@ -3,7 +3,10 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
-   
+   if(argc<2){
+    fprintf(stderr,"invalid file path");
+    return 0;
+   }
     Chip8 c;
     init_chip8(&c);
     load_rom(&c, argv[1]);
@@ -38,7 +41,7 @@ int main(int argc, char **argv) {
         c.keypad[0xF] = IsKeyDown(KEY_V);
 
         //cpu run
-        for (int i = 0; i < 10; i++) {
+        for (int i=0;i<10;i++) { //pc disp at 60Hz but chip8 cpu at 600MHz approx so 600/60 =10 per frame 
             emulate_cycle(&c);
         }
 
@@ -51,15 +54,15 @@ int main(int argc, char **argv) {
             BeginDrawing();
             ClearBackground(BLACK);
             
-            for (int y = 0; y < SH; y++) {
-                for (int x = 0; x < SW; x++) {
-                    if (c.display[x + (y * SW)] != 0) {
-                        DrawRectangle(x * scale, y * scale, scale, scale, WHITE); // scale,scakle cause pixels need 10x magnification 
+            for (int y=0;y<SH; y++) {
+                for (int x = 0;x<SW; x++) {
+                    if (c.display[x+(y*SW)]!=0) {
+                        DrawRectangle(x*scale, y*scale,scale,scale,WHITE); // scale,scakle cause pixels need 10x magnification 
                     }
                 }
             }
             EndDrawing();
-            c.draw_flag = 0; 
+            c.draw_flag=0; 
         } else{
             BeginDrawing();
             EndDrawing();
