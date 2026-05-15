@@ -150,7 +150,7 @@ void emulate_cycle(Chip8 *chip8){
                 chip8->V[X]=(rand()%256)&kk;
                 break;
             case 0xD000:
-                uint8_t x_pos=chip8->V[X]%SW; //calc postions 
+                uint8_t x_pos=chip8->V[X]%SW; //calc postions , regs can hold upto 255 but size =64*32
                 uint8_t y_pos=chip8->V[Y]%SH;
                 chip8->V[0xF]=0; //assume no collison 
                 for(uint8_t row=0;row<n;row++){

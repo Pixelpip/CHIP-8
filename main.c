@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
                 }
             }
             EndDrawing();
-            c.draw_flag=0; 
+            c.draw_flag=0; //end drawing 
         } else{
             BeginDrawing();
             EndDrawing();

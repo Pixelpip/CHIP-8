@@ -17,7 +17,7 @@
 
 
 typedef struct {
-    uint8_t ram[MEM_SIZE]; //8bit=1byte => 4*1024 bytes=4KB
+    uint8_t ram[MEM_SIZE]; //8bit=1byte , 4*1024 bytes=4KB
     uint8_t V[NUM_REGISTER]; // V0-VF registers
     uint16_t I; // memory address storage register 
     uint16_t PC;// program counter register
