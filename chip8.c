@@ -4,28 +4,28 @@
 #include<stdlib.h>
 
 static const uint8_t font[FONT_SIZE]={
-    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
-    0x20, 0x60, 0x20, 0x20, 0x70, // 1
-    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
-    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
-    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
-    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
-    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
-    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
-    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
-    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
-    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
-    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
-    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
-    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
-    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-    0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+    0xF0, 0x90, 0x90, 0x90, 0xF0, //0
+    0x20, 0x60, 0x20, 0x20, 0x70, //1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, //2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, //3
+    0x90, 0x90, 0xF0, 0x10, 0x10, //4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, //5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, //6
+    0xF0, 0x10, 0x20, 0x40, 0x40, //7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, //8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, //9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, //A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, //B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, //C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, //D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, //E
+    0xF0, 0x80, 0xF0, 0x80, 0x80  //F
 };
 
 void init_chip8(Chip8 *chip8){
     memset(chip8,0,sizeof(Chip8)); //set the whole ram to 0 
     chip8->PC=PGM_START; //PC set to the address 0x200 where programs start
-   for (int i = 0; i < FONT_SIZE; i++) { //setting fonts
+   for (int i = 0; i < FONT_SIZE; i++) { //setting fontsinto ram
     chip8->ram[FONT_ADDR + i] = font[i];
 }
 }
@@ -56,7 +56,7 @@ void emulate_cycle(Chip8 *chip8){
     uint8_t X=(opcode&0x0F00)>>8; //fetches the bits from 9-12 , right shifted to fit into a 8 bit
     uint8_t Y=(opcode&0x00F0)>>4; //same but 5-8
     uint8_t n=(opcode&0x000F); //last one , n is the 4bit value
-    uint8_t kk=(opcode&0x0FF); //whole byte fetch , kk is 8bit
+    uint8_t kk=(opcode&0x00FF); //whole byte fetch , kk is 8bit
     uint16_t nnn=(opcode&0x0FFF);//nnn is 12bit
 
     switch(opcode&0xF000){  //switch to determine the type of the opcode using opcodes first 4 bits
@@ -79,6 +79,7 @@ void emulate_cycle(Chip8 *chip8){
             break;
         case 0x2000:
             chip8->stack[++chip8->SP]=chip8->PC;
+            chip8->PC=nnn;
             break;
         case 0x3000:
             if(chip8->V[X]==kk) chip8->PC+=2;
@@ -90,7 +91,7 @@ void emulate_cycle(Chip8 *chip8){
             if(chip8->V[X]==chip8->V[Y]) chip8->PC+=2;
             break;
         case 0x6000:
-            if(chip8->V[X]==kk) chip8->V[X]=kk;
+            chip8->V[X]=kk;
             break;
         case 0x7000:
             chip8->V[X]+=kk;
@@ -179,12 +180,13 @@ void emulate_cycle(Chip8 *chip8){
                         fprintf(stderr,"unknown 0XE000 opcode: 0x%04X\n",opcode);
                         break;
                 }
+                break;
             case 0xF000:
                 switch(kk){
                     case 0x07:
                         chip8->V[X]=chip8->DT;
                         break;
-                    case 0xA:
+                    case 0x0A:
                         uint8_t key_pres=0;
                         for(uint8_t i=0;i<16;i++){
                             if(chip8->keypad[i]!=0){
@@ -203,10 +205,33 @@ void emulate_cycle(Chip8 *chip8){
                         break;
                     case 0x1E:
                         chip8->I+=chip8->V[X];
+                        break;
                     case 0x29:
                         chip8->I=FONT_ADDR+((chip8->V[X]&0xF)*5); //15 different fonts only and each of width 5 
                         break;
+                    case 0x33:
+                        chip8->ram[chip8->I]   = chip8->V[X] / 100;
+                        chip8->ram[chip8->I+1] = (chip8->V[X] / 10) % 10;
+                        chip8->ram[chip8->I+2] = chip8->V[X] % 10;
+                        break;
+                    case 0x55:
+                        for(uint8_t i=0;i<=X;i++){
+                            chip8->ram[chip8->I+i]=chip8->V[i]; //copy data from V regs and store into ram from loc I 
+                        }
+                        break;
+                    case 0x65:
+                        for(uint8_t i=0;i<=X;i++){
+                            chip8->V[i]=chip8->ram[chip8->I+i];
+                        }
+                        break;
+                    default:
+                        fprintf(stderr,"invalid opcode of range 0xF000(opcode:0x%04X\n)",opcode);
+                        break;
                 }
+                break;
+                default:
+                fprintf(stderr,"idk this opcode (opcode:0x%04X\n)",opcode);
+                break;
 
 
             

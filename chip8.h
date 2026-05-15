@@ -33,8 +33,6 @@ typedef struct {
 }Chip8;
 
 void init_chip8(Chip8 *chip8); //initialize the system
-
 void load_rom(Chip8 *c,const char *filename);  //loading the rom 
-
 void emulate_cycle(Chip8 *c); //cpu cycle emulation
 

@@ -1,1 +1,1 @@
-gcc main.c -o chip8 $(pkg-config --cflags --libs raylib)
+gcc main.c chip8.c -o chip8 -lraylib -lm
