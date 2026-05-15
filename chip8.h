@@ -12,7 +12,7 @@
 #define SW 64
 #define SH 32
 #define FONT_SIZE 80
-#define FONT_ADDR 0x50
+#define FONT_ADDR 0x50 
 #define PGM_START 0x200
 
 

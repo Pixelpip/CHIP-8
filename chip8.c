@@ -23,9 +23,11 @@ static const uint8_t font[FONT_SIZE]={
 };
 
 void init_chip8(Chip8 *chip8){
-    memset(chip8,0,sizeof(chip8)); //set the whole ram to 0 
+    memset(chip8,0,sizeof(Chip8)); //set the whole ram to 0 
     chip8->PC=PGM_START; //PC set to the address 0x200 where programs start
-    memcpy(&chip8->ram[FONT_ADDR],font,FONT_SIZE); //fonts loaded into the ram 
+   for (int i = 0; i < FONT_SIZE; i++) { //setting fonts
+    chip8->ram[FONT_ADDR + i] = font[i];
+}
 }
 
 void load_rom(Chip8 *chip8, const char *filename){
@@ -55,9 +57,9 @@ void emulate_cycle(Chip8 *chip8){
     uint8_t Y=(opcode&0x00F0)>>4; //same but 5-8
     uint8_t n=(opcode&0x000F); //last one , n is the 4bit value
     uint8_t kk=(opcode&0x0FF); //whole byte fetch , kk is 8bit
-    uint8_t nnn=(opcode&0x0FFF);//nnn is 12bit
+    uint16_t nnn=(opcode&0x0FFF);//nnn is 12bit
 
-    switch(opcode&0x00F){  //switch to determine the type of the opcode using opcodes first 4 bits
+    switch(opcode&0xF000){  //switch to determine the type of the opcode using opcodes first 4 bits
         case 0x0000:
             switch(opcode&0x00FF){
                 case 0x00E0:
@@ -129,11 +131,85 @@ void emulate_cycle(Chip8 *chip8){
                     break;
                 case 0xE:
                     chip8->V[0xF]=(chip8->V[X]&0x80)>>7; //check if MSB is 1 and take the MSB bit from 8th place to 0th place 
-                    chip8->V[X]<<=2;
+                    chip8->V[X]<<=1;
                     break;
                 
             }
             break;
+            case 0x9000:
+                if(chip8->V[X]!=chip8->V[Y]) chip8->PC+=2;
+                break;
+            case 0xA000:
+                chip8->I=nnn;
+                break;
+            case 0xB000:
+                chip8->PC=nnn+chip8->V[0];
+                break;
+            case 0xC000:
+                chip8->V[X]=(rand()%256)&kk;
+                break;
+            case 0xD000:
+                uint8_t x_pos=chip8->V[X]%SW;
+                uint8_t y_pos=chip8->V[Y]%SH;
+                chip8->V[0xF]=0;
+                for(uint8_t row=0;row<n;row++){
+                    uint8_t sprite_byte=chip8->ram[chip8->I+row];
+                    for(uint8_t col=0;col<8;col++){
+                        if((sprite_byte&(0x80>>col))!=0){
+                            uint16_t screen_idx = (x_pos+col)+((y_pos+row)*SW);
+                            if(screen_idx<SW*SH){
+                                if(chip8->display[screen_idx]==1)chip8->V[0xF]=1;
+                                chip8->display[screen_idx]^=1;
+                            }
+                        }
+
+                    }
+                }
+                chip8->draw_flag=1;
+                break;
+            case 0xE000:
+                switch(kk){
+                    case 0x9E:
+                        if(chip8->keypad[chip8->V[X]])chip8->PC+=2;
+                        break;
+                    case 0xA1:
+                        if(!chip8->keypad[chip8->V[X]])chip8->PC+=2;
+                        break;
+                    default:
+                        fprintf(stderr,"unknown 0XE000 opcode: 0x%04X\n",opcode);
+                        break;
+                }
+            case 0xF000:
+                switch(kk){
+                    case 0x07:
+                        chip8->V[X]=chip8->DT;
+                        break;
+                    case 0xA:
+                        uint8_t key_pres=0;
+                        for(uint8_t i=0;i<16;i++){
+                            if(chip8->keypad[i]!=0){
+                                chip8->V[X]=i;
+                                key_pres+=1;
+                                break;
+                            }
+                        }
+                        if(key_pres==0)chip8->PC-=2; //if key not presed then reduce PC and force fetch same opcode again from the ROM
+                        break;
+                    case 0x15:
+                        chip8->DT=chip8->V[X];
+                        break;
+                    case 0x18:
+                        chip8->ST=chip8->V[X];
+                        break;
+                    case 0x1E:
+                        chip8->I+=chip8->V[X];
+                    case 0x29:
+                        chip8->I=FONT_ADDR+((chip8->V[X]&0xF)*5); //15 different fonts only and each of width 5 
+                        break;
+                }
+
+
+            
 
     }
 
