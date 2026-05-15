@@ -166,7 +166,7 @@ void emulate_cycle(Chip8 *chip8){
 
                     }
                 }
-                chip8->draw_flag=1;
+                chip8->draw_flag=1; //if this flag is 1 then starting drawing on screen using raylib 
                 break;
             case 0xE000:
                 switch(kk){
