@@ -1,6 +1,7 @@
 # CHIP-8
-Developing a CHIP-8 interpreter in C 
+* run ``` make ```
+* then run ```./chip8 ./<rom_name>```
 
 
-# opcodes not done 
-* Fx33 - LD B, Vx --- need to learn about BCD 
+# issues 
+* flickering on the raylib window 
