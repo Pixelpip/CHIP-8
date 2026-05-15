@@ -1,6 +1,6 @@
 # CHIP-8
 * run ``` make ```
-* then run ```./chip8 ./<rom_name>```
+* then run ```./chip8 ./roms/<rom_name>```
 
 
 # issues 
