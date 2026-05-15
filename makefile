@@ -1,1 +1,2 @@
-gcc main.c chip8.c -o chip8 -lraylib -lm
+all:
+	gcc main.c chip8.c -o chip8 -lraylib -lm
