@@ -2,6 +2,8 @@
 * run ``` make ```
 * then run ```./chip8 ./roms/<rom_name>```
 
+## features 
+* need to implement audio
 
-# issues 
+## issues 
 * flickering on the raylib window 

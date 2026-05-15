@@ -3,20 +3,16 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <path_to_rom>\n", argv[0]);
-        return 1;
-    }
-
+   
     Chip8 c;
     init_chip8(&c);
     load_rom(&c, argv[1]);
 
-    const int scale = 10; //ch8 screen too smol , need scale
-    const int width = SW * scale;
-    const int height = SH * scale;
+    const int scale=10; //ch8 screen too smol  need scale
+    const int width=SW*scale;
+    const int height=SH*scale;
     
-    InitWindow(width, height, "CHIP-8 Emulator");
+    InitWindow(width,height,"CHIP-8 Emulator");
     SetTargetFPS(60); 
 
     while (!WindowShouldClose()) {
