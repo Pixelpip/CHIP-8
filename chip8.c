@@ -150,17 +150,17 @@ void emulate_cycle(Chip8 *chip8){
                 chip8->V[X]=(rand()%256)&kk;
                 break;
             case 0xD000:
-                uint8_t x_pos=chip8->V[X]%SW;
+                uint8_t x_pos=chip8->V[X]%SW; //calc postions 
                 uint8_t y_pos=chip8->V[Y]%SH;
-                chip8->V[0xF]=0;
+                chip8->V[0xF]=0; //assume no collison 
                 for(uint8_t row=0;row<n;row++){
-                    uint8_t sprite_byte=chip8->ram[chip8->I+row];
+                    uint8_t sprite_byte=chip8->ram[chip8->I+row]; //fetch the row of the sprite 
                     for(uint8_t col=0;col<8;col++){
-                        if((sprite_byte&(0x80>>col))!=0){
-                            uint16_t screen_idx = (x_pos+col)+((y_pos+row)*SW);
-                            if(screen_idx<SW*SH){
-                                if(chip8->display[screen_idx]==1)chip8->V[0xF]=1;
-                                chip8->display[screen_idx]^=1;
+                        if((sprite_byte&(0x80>>col))!=0){ //fetching each bit from the 8bits 
+                            uint16_t screen_idx = (x_pos+col)+((y_pos+row)*SW); //calc position on screen 
+                            if(screen_idx<SW*SH){ // if within bounds of screen 
+                                if(chip8->display[screen_idx]==1)chip8->V[0xF]=1; //if pixel is already lit then collision occured
+                                chip8->display[screen_idx]^=1; //whatever the if , change pixel state by xor 
                             }
                         }
 
