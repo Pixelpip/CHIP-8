@@ -36,7 +36,7 @@ void load_rom(Chip8 *chip8, const char *filename){
         fprintf(stderr,"error:could not open file:%s\n",filename);
         return;
     }
-    size_t bytes_read=fread(&chip8->ram[PGM_START],1,MEM_SIZE-PGM_START,fp);
+    uint64_t bytes_read=fread(&chip8->ram[PGM_START],1,MEM_SIZE-PGM_START,fp);
 
     if(bytes_read==0){
         fprintf(stderr,"error: ROM %s is empty or DNE",filename);
