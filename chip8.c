@@ -23,7 +23,7 @@ static const uint8_t font[FONT_SIZE]={
 };
 
 void init_chip8(Chip8 *chip8){
-    memset(chip8,0,sizeof(Chip8)); //set the whole ram to 0 
+    memset(chip8,0,sizeof(Chip8)); //set the whole struct to 0 
     chip8->PC=PGM_START; //PC set to the address 0x200 where programs start
     for (int i = 0; i < FONT_SIZE; i++) { //setting fontsinto ram
         chip8->ram[FONT_ADDR + i] = font[i];
